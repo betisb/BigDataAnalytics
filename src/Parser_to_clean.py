@@ -61,5 +61,6 @@ for ldirs in label_dirs[:1]:
         traj_df['trans_mode'] = np.nan
         traj_df.loc[has_trip,'trans_mode'] = traj_df.loc[has_trip].apply(lambda x: trip_trans.loc[x.trans_trip,'Transportation Mode'],axis=1)
         all_traj = pd.concat([all_traj,traj_df])
+for each in label_dirs:
 
-all_traj.to_csv("C:\\Users\\Betis\\PycharmProjects\\Big_Data\\src\\parser\\"+str(str(label_dirs)+'trip'+'labeled.csv'))
+    all_traj.to_csv("C:\\Users\\Betis\\PycharmProjects\\Big_Data\\src\\parser\\"+str(each.replace("\\","-"))+'trip'+'labeled.csv')

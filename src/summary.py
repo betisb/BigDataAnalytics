@@ -39,6 +39,10 @@ a = np.sin(dlat/2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon/2)**2
 delta_dist = 2 * np.arcsin(np.sqrt(a)) * 3956
 tpoints['delta_dist'] = delta_dist
 tpoints['speed'] = tpoints['delta_dist'] / (tpoints['dt_seconds'] / 3600. )
+import time
+quantum_start = time.time()
+# for k in range(32):
+
 tpoints.query('transit == "train"').groupby('trip_id').speed.max().describe()
 trip_start = tpoints.groupby('trip_id').timestamp.transform('first')
 trip_end = tpoints.groupby('trip_id').timestamp.transform('last')
@@ -47,10 +51,15 @@ reg_walks = tpoints.groupby('trip_id').speed.transform('max') <= 15
 min_time = ((trip_time.dt.seconds / 60.) >= 5) & ((trip_time.dt.seconds / 60.) <= 15)
 match_walks = tpoints.loc[reg_walks & min_time,'trip_id'].unique()
 ex_walk = tpoints.trip_id == match_walks[-1]
+quantum_end = (time.time() - quantum_start)
+print("Query time: {0}".format(quantum_end))
 print(len(match_walks))
 print('example trip:', match_walks[-1])
 print('number of GPS observations:', len(tpoints.loc[ex_walk]))
 adj_lat = tpoints.loc[ex_walk,'latitude'] - tpoints.loc[ex_walk,'latitude'].mean()
 adj_lon = tpoints.loc[ex_walk,'longitude'] - tpoints.loc[ex_walk,'longitude'].mean()
-pd.concat([(adj_lat * 1000),(adj_lon * 1000)],axis=1).plot(x='longitude',y='latitude',marker='o')
+data_plot = pd.concat([(adj_lat * 1000),(adj_lon * 1000)],axis=1).plot(x='longitude',y='latitude',marker='o')
+from matplotlib import pyplot as plt
+plt.boxplot((adj_lat *1000))
+plt.show()
 # print(pd)
